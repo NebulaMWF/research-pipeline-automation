@@ -1,0 +1,7 @@
+interface:
+  display_name: "Research Pipeline Automation"
+  short_description: "Build runnable research pipelines from specs"
+  default_prompt: "Use $research-pipeline-automation to turn this research spec into a working pipeline with automation, experiment tracking, and a manuscript draft."
+
+policy:
+  allow_implicit_invocation: true
