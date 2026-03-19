@@ -235,6 +235,9 @@ Build the end-to-end pipeline, set up dataset download and preprocessing, run th
 
 这个问题也应该被视为 skill 的标准自愈场景之一。
 
+更具体地说，自动化不应该拿同一个 worker 数无限重试。  
+它应该主动把 worker 数往下调；如果当前 run 已经被污染，就直接在新的输出目录里干净重启。
+
 ## 常见故障模式：多次重启后出现状态错乱
 
 另一个很常见的问题是自动化状态不一致：
@@ -260,6 +263,26 @@ Build the end-to-end pipeline, set up dataset download and preprocessing, run th
 6. 用新的输出目录重新启动整个流程
 
 这个“干净重启”应该被视为自动化策略的一部分，而不是一次性的人工应急操作。
+
+## 常见故障模式：结果文件已经被污染
+
+还有一种情况也应该触发干净重启：
+
+- `metrics.jsonl` 里出现重复的 `epoch 1 / step 1`
+- 同一个 run 目录里前后记录互相矛盾
+- `predictions_*.jsonl` 继续在旧失败结果后面追加
+
+这说明这个 run 目录里的结果文件已经被污染，不适合继续沿用。
+
+更合理的处理方式是：
+
+1. 把这个 run 目录标记为不可信
+2. 只保留上游可复用资产：
+   - 原始数据
+   - processed 数据
+   - 长度索引和其他缓存
+3. 删除旧 run 目录
+4. 用新的输出目录重新从 epoch 1 开始
 
 ## 硬件感知与调参
 

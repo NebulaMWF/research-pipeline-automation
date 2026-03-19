@@ -234,6 +234,9 @@ In that case, the right fix is usually:
 
 This is also treated as part of the intended self-healing behavior for the skill.
 
+In practice, this means the automation should not keep retrying forever with the same worker count.  
+It should actively step worker count down and, when needed, restart from a fresh output directory.
+
 ## Common Failure Pattern: State Mismatch After Failed Restarts
 
 Another common failure mode is that the automation state becomes inconsistent:
@@ -256,6 +259,23 @@ The preferred recovery sequence is:
 6. restart from a new clean output directory
 
 This clean-restart pattern should be treated as part of the automation strategy, not as an ad hoc manual workaround.
+
+## Common Failure Pattern: Tainted Metrics Or Prediction Files
+
+Another case that should trigger a clean restart is when a run directory already contains mixed history, for example:
+
+- duplicate `epoch 1 / step 1` records from multiple attempts
+- later `metrics.jsonl` rows contradict earlier rows in the same run
+- prediction files keep old partial outputs from failed attempts
+
+In that situation, continuing in the same output directory makes the artifacts unreliable.
+
+Preferred response:
+
+1. mark the run directory as tainted
+2. keep reusable upstream assets only
+3. delete the old run directory
+4. start from a fresh output directory so result files are clean from epoch 1
 
 ## Hardware-Aware Operation
 

@@ -145,6 +145,15 @@ Preferred response:
 3. record the repaired worker count in generated configs and experiment ledgers
 4. if the run directory is already inconsistent, clean-restart from a fresh output directory
 
+Worker-count repair should be considered a first-class self-healing strategy.
+
+Recommended behavior:
+
+- first failure:
+  lower workers and retry
+- repeated failure or already-tainted run:
+  lower workers and clean-restart from a new run directory
+
 ## Common Failure Pattern: State Mismatch
 
 Typical symptoms:
@@ -161,6 +170,24 @@ Preferred response:
 2. stop everything associated with the broken run
 3. preserve valid caches
 4. restart from a fresh run directory
+
+## Common Failure Pattern: Tainted Result Files
+
+Typical symptoms:
+
+- `metrics.jsonl` contains duplicate `step` / `epoch` records from multiple attempts
+- later records contradict earlier records inside the same run directory
+- prediction files continue appending after a failed or partial restart
+
+Preferred response:
+
+1. treat the run directory as tainted
+2. do not reuse it for further training
+3. preserve reusable upstream assets only:
+   - raw data
+   - processed data
+   - length indices / metadata caches
+4. restart from a brand-new output directory so epoch numbering and result files are clean
 
 ## Draft Generation
 

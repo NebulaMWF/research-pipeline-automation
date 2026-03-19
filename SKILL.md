@@ -190,6 +190,14 @@ Preferred response order:
 2. retry the same job
 3. if state became inconsistent, perform a clean restart from a new output directory
 
+When using self-healing automation, this should be treated as a standard repair path:
+
+- detect worker / shm failure from logs
+- lower worker count
+- regenerate or patch the active config
+- retry once in-place if the run directory is still clean
+- otherwise clean-restart in a new output directory
+
 ## Clean Restart Rule
 
 Use a clean restart when the pipeline state is inconsistent rather than merely slow.
@@ -201,6 +209,8 @@ Typical symptoms:
 - old child processes remain after multiple restart attempts
 - GPU is idle or erratic while stale workers still exist
 - logs contain multiple historical `RUN` headers for the same job and the current state is no longer trustworthy
+- metrics or prediction artifacts contain mixed history from multiple restart attempts
+- an epoch restarts from `step 1` in the same run directory, causing duplicated or contradictory records
 
 Required clean restart sequence:
 
@@ -212,10 +222,12 @@ Required clean restart sequence:
    - downloaded raw data
    - processed datasets
    - length indices or other reusable caches
-6. restart from a fresh output directory
+6. restart from a fresh output directory so the next run starts from a clean epoch-1 state
 7. record that a clean restart was used
 
 Do not delete reusable caches unless they are known to be corrupt.
+
+If result files already contain mixed or contradictory history, treat the whole run directory as tainted and do not append to it further.
 
 ## Manuscript Rules
 
