@@ -1,5 +1,7 @@
 # Research Pipeline Automation
 
+English version: [README.md](./README.md)
+
 `research-pipeline-automation` 是一个通用的自动科研 skill，用来把一份科研方案文档转换成可执行的仓库工作流。
 
 它面向的是“执行型科研自动化”，而不是简单的文本总结。典型使用方式是：你提供一份结构化的项目方案、benchmark 计划或方法设计文档，这个 skill 帮助 agent 在仓库里补齐或重构代码，让仓库能够完成数据下载、预处理、自动实验、结果记录，以及论文初稿生成。

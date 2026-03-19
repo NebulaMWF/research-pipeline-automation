@@ -1,5 +1,7 @@
 # Research Pipeline Automation
 
+中文说明: [README.zh-CN.md](./README.zh-CN.md)
+
 `research-pipeline-automation` is a general-purpose skill package for turning a research specification document into a runnable repository workflow.
 
 It is designed for execution-oriented research work rather than passive summarization. The intended use case is: you provide a structured project spec, benchmark plan, or methodology document, and the skill helps an agent build or patch the repository so it can download data, preprocess inputs, run experiments, track settings/results, and draft a paper or report.
